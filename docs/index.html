@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,30 +6,51 @@
     <title>Storage Cleaner Dashboard</title>
     <style>
         body { font-family: sans-serif; padding: 20px; text-align: center; background: #f4f4f9; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        button { padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; }
+        button { padding: 10px 20px; font-size: 16px; margin: 5px; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-scan { background: #007bff; }
+        .btn-clean { background: #28a745; }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>App Storage Cleaner</h1>
-        <button onclick="scanStorage()">Scan System Cache</button>
+        <button class="btn-scan" onclick="scanStorage()">Scan System Cache</button>
+        <button class="btn-clean" onclick="cleanStorage()">Clean Storage</button>
         <div id="results" style="margin-top: 20px;"></div>
     </div>
 
     <script>
+        const API_URL = 'http://127.0.0.1:5000';
+
         async function scanStorage() {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerText = "Scanning local server...";
             try {
-                const response = await fetch('http://127.0.0.1:5000/api/scan');
+                const response = await fetch(`${API_URL}/api/scan`);
                 const data = await response.json();
                 resultsDiv.innerHTML = `<p>Path: ${data.cache_path}</p>
+                                        <p>Files Found: ${data.file_count}</p>
                                         <p>Reclaimable Space: <strong>${data.reclaimable_space_mb} MB</strong></p>`;
             } catch (error) {
-                resultsDiv.innerText = "Error: Ensure local agent script is running on target device at http://localhost:5000.";
+                resultsDiv.innerText = "Error: Ensure local agent script is running on target device.";
+            }
+        }
+
+        async function cleanStorage() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerText = "Cleaning temporary files...";
+            try {
+                const response = await fetch(`${API_URL}/api/clean`, { method: 'POST' });
+                const data = await response.json();
+                resultsDiv.innerHTML = `<p>Status: Cleaned Successfully!</p>
+                                        <p>Files Removed: ${data.deleted_count}</p>
+                                        <p>Freed Space: <strong>${data.freed_space_mb} MB</strong></p>`;
+            } catch (error) {
+                resultsDiv.innerText = "Error executing cleanup.";
             }
         }
     </script>
 </body>
 </html>
+

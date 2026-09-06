@@ -1,0 +1,35 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Cleaner Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; text-align: center; background: #f4f4f9; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button { padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>App Storage Cleaner</h1>
+        <button onclick="scanStorage()">Scan System Cache</button>
+        <div id="results" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        async function scanStorage() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerText = "Scanning local server...";
+            try {
+                const response = await fetch('http://localhost:5000/api/scan');
+                const data = await response.json();
+                resultsDiv.innerHTML = `<p>Path: ${data.cache_path}</p>
+                                        <p>Reclaimable Space: <strong>${data.reclaimable_space_mb} MB</strong></p>`;
+            } catch (error) {
+                resultsDiv.innerText = "Error: Ensure local agent script is running on target device at http://localhost:5000.";
+            }
+        }
+    </script>
+</body>
+</html>

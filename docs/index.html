@@ -22,7 +22,7 @@
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerText = "Scanning local server...";
             try {
-                const response = await fetch('http://localhost:5000/api/scan');
+                const response = await fetch('http://127.0.0.1:5000/api/scan');
                 const data = await response.json();
                 resultsDiv.innerHTML = `<p>Path: ${data.cache_path}</p>
                                         <p>Reclaimable Space: <strong>${data.reclaimable_space_mb} MB</strong></p>`;
